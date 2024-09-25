@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+:root{
+    --normal-font : "Open Sans", sans-serif;
+    --normalText-color : rgb(42, 41, 41);
+    --button-color: rgb(104, 164, 104);
+    --button-text-color: white;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--normal-font);
+}
+
+.loginPageContainer{
+    width: 100vw;
+    height: 100vh;
+}
+.logodiv{
+    padding: 10px;
+}
+.logo{
+    font-weight: 700;
+}
+
+.loginBox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 10em;
+    padding-bottom: 10em;
+}
+.loginTable{
+    width: 30%;
+}
+.inputbox{
+    width: 23em;
+    height: 2.8em;
+    border: 2px solid black;
+    outline: none;
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+.tablehead{
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+.tablehead tr td{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.tablerow td{
+    padding: 10px 4px;
+}
+.btnrow td{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+.loginbtn{
+    width: 80%;
+    height: 35px;
+    border: 2px solid var(--button-color);
+    border-radius: 10px;
+    color: var(--button-text-color);
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: var(--button-color);
+}
+.loginbtn:hover{
+    transform: scale(1.1);
+    transition: transform, 0.3s;
+}
+/* ***************************************************dashbord */
+
+.dashboardPageContainer{
+    width: 100vw;
+    height: 100vh;
+}
+.navbar{
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px 20px;
+border-bottom: 2px solid rgb(218, 213, 213);
+
+}
+.navbar ul li{
+    list-style-type: none;
+}
+.navitem{
+    font-size: 1.3rem;
+    color: var(--normalText-color);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+.normaltxt{
+    cursor:text;
+}
+.homebtn:hover{
+    text-decoration: underline;
+    color: green;
+}
+.logoutbtn:hover{
+    text-decoration: underline;
+    color: red;
+}
+.logoutsection{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.topdiv{
+    height: 15%;
+}
+.dasdboardBox{
+    display: flex;
+    height: 85%;
+    justify-content: center;
+}
+.dashbordbody{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.welcomediv{
+    display: flex;
+    justify-content: center;
+    align-items: center ;
+    height: 100%;
+    width: 100%;
+}
+.countandcreate, ul{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 100%;
+}
+.countandcreate ul li{
+    list-style-type: none;
+    padding: 4px 20px;
+}
+.createbtn{
+    font-size: 1rem;
+    width: 200px;
+    padding: 4px 10px;
+    background-color: var(--button-color);
+    color: white;
+    font-weight: 700;
+    border: 2px solid var(--button-color);
+    border-radius: 5px;
+}
+.createbtn:hover{
+    transform: scale(1.1);
+    transition: transform, 0.3s;
+}
+.welcomediv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
