@@ -35,7 +35,7 @@
     padding-bottom: 10em;
 }
 .loginTable{
-    width: 30%;
+    width: 35%;
 }
 .inputbox{
     width: 23em;
@@ -44,6 +44,7 @@
     outline: none;
     padding: 2px 8px;
     border-radius: 5px;
+    font-size: 1rem;
 }
 .tablehead{
     font-size: 1.5rem;
@@ -55,7 +56,7 @@
     padding-bottom: 10px;
 }
 .tablerow td{
-    padding: 10px 4px;
+    padding: 10px 10px;
 }
 .btnrow td{
     padding-top: 20px;
@@ -149,7 +150,7 @@ border-bottom: 2px solid rgb(218, 213, 213);
 }
 .createbtn{
     font-size: 1rem;
-    width: 200px;
+    width: 225px;
     padding: 4px 10px;
     background-color: var(--button-color);
     color: white;
@@ -166,4 +167,123 @@ border-bottom: 2px solid rgb(218, 213, 213);
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+.searchdiv , ul{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 100%;
+}
+.searchdiv ul li{
+    list-style-type: none;
+}
+.searchInput{
+    width: 20em;
+    height: 2.3em;
+    border: 2px solid black;
+    padding: 2px 10px;
+    border-left: 0;
+    border-right: 0;
+    outline: none;
+}
+.searchIcon{
+    height: 2.3em;
+    padding: 0 10px;
+    border: 2px solid black;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-right: 0;
+    cursor: pointer;
+}
+.searchoptions{
+    height: 2.3em;
+    outline: none;
+    border: 2px solid black;
+    border-left: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    margin-right: 20px;
+}
+/* ********************************************create and update */
+.createemployeediv{
+    width: 40%;
+    height: 100%;
+    /* display: flex; */
+    justify-content: center;
+    display: none;
+}
+.updateemployeediv{
+    width: 40%;
+    height: 100%;
+    /* display: flex; */
+    justify-content: center;
+    display: none;
+}
+.createTable{
+    width: 100%;
+    padding-top: 20px;
+}
+.createTable .createtablebody tr td{
+    padding: 10px 10px;
+}
+.createinputs, .createselect{
+    width: 23em;
+    height: 2.7em;
+    border: 2px solid black;
+    outline: none;
+    font-size: 1rem;
+    border-radius: 5px;
+    padding: 2px 8px;
+}
+.leftlabel{
+    font-size: 1.1rem;
+}
+.genderradio, .coursecheckbox{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+}
+.optionitems{
+    padding-right: 15px;
+}
+.genderradio label{
+    font-size: 1.1rem;
+    padding: 0 5px;
+}
+.coursecheckbox label{
+    font-size: 1.1rem;
+    padding: 0 5px;
+}
+.filetd{
+    height: 3em;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+}
+.loadfile{
+    font-size: 1rem;
+}
+.imagefile{
+    padding-right: 10px;
+}
+.createbtnrow{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+.submitbtn{
+    width: 80%;
+    height: 35px;
+    border: 2px solid var(--button-color);
+    border-radius: 10px;
+    color: var(--button-text-color);
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: var(--button-color);
+}
+.submitbtn:hover{
+    transform: scale(1.1);
+    transition: transform, 0.3s;
 }
