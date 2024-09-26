@@ -1,12 +1,29 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 
 function Loginpage() {
     const navigate = useNavigate();
+    const [username, setusername] = useState("");
+    const [password, setpassword] = useState("");
+    const name = "Hukum Gupta";
+    const userpassword = "admin123"
 
-    const handleLoginClick = () =>{
+    const handleLoginClick = (e) =>{
+      e.preventDefault();
+      if((username === '') || (password === '')){
+        alert("All fields must be filed");
+      }else if(username !== name){
+       alert("User Name is incorrect!!")
+      } else if(password !== userpassword){
+        alert("Password is incorrect!!")
+      }else{
+        localStorage.setItem('username', JSON.stringify(username));
+        alert("Login Successfull!!")
         navigate('/dashboard');
+      } 
+      setusername("");
+      setpassword("");
     }
 
   return (
@@ -21,12 +38,12 @@ function Loginpage() {
                 <tr className='tablerow'>
                     <td>User Name </td>
                     <td>:</td>
-                    <td><input type="email" className="inputbox" placeholder='Enter your username'/></td>
+                    <td><input type="text" className="inputbox" placeholder='Enter your username' value={username} onChange={(e)=>setusername(e.target.value)}/></td>
                 </tr>
                 <tr className='tablerow'>
                     <td>Password </td>
                     <td>:</td>
-                    <td><input type="password" className="inputbox" placeholder='Enter your password'/></td>
+                    <td><input type="password" className="inputbox" placeholder='Enter your password' value={password} onChange={(e)=>setpassword(e.target.value)}/></td>
                 </tr>
                 <tr className='tablerow btnrow'>
                     <td colSpan={3} ><button onClick={handleLoginClick} className='loginbtn'>Login</button></td>
