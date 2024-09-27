@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa'
-import Itachipic from '../assets/Image/itachi.jpg'
 import axios from 'axios';
 
 function Dashbord() {
 const [emps, setemps] = useState([{}]);
+const [searchresults, setsearchresults] = useState([]);
+const [query, setquery] = useState("");
+const [searchstatus, setsearchstatus] = useState(false);
 
 const navigate = useNavigate();
 const [admin, setadmin] = useState("");
@@ -18,14 +20,17 @@ const [desig, setdesig] = useState("HR");
 const [empgender, setempgender] = useState("");
 const [empcourse, setempcourse] = useState([]);
 
-const [editname, seteditname] = useState("");
-const [editemail, seteditemail] = useState("");
+const [editName, seteditname] = useState("");
+const [editEmail, seteditemail] = useState("");
 const [editcontact, seteditcontact] = useState("");
 const [editdesig, seteditdesig] = useState("");
 const [editgender, seteditgender] = useState("");
-const [editcourse, seteditcourse] = useState("");
+const [editcourse, seteditcourse] = useState([]);
 const [editimage, seteditimage] = useState("");
 const [editid, seteditid] =useState("");
+
+var editname = editName.trim();
+var editemail = editEmail.replaceAll(" ", "").toLowerCase().trim();
 
 var UserName = username.trim();
 var Email = email.replaceAll(" ", "").toLowerCase().trim();
@@ -41,7 +46,6 @@ useEffect(()=> {
         const res = await axios.get('http://localhost:3000/getemp');
         setemps(res.data)
         setCount(res.data.length);
-        console.log(emps);
        }catch(err){
                 console.log(err)
          }
@@ -68,6 +72,10 @@ useEffect(()=> {
   console.log('Current editid:', editid);
 }
 
+if (searchresults.length > 0) {
+  console.log('Updated search results state:', searchresults);
+}
+
 //  const fetchid = async () => {
 //   try {
 //     const response = await axios.get('http://localhost:3000/id');
@@ -77,7 +85,7 @@ useEffect(()=> {
 //   }
 // };
 // fetchid();
-}, [count, editid]);
+}, [count, editid, searchresults]);
 
 const handleHomeclick = () =>{
   window.location.reload();
@@ -206,12 +214,47 @@ const edithandlecheckbox = (e) => {
   const value = e.target.value;
  
   if(e.target.checked){
-    seteditcourse([...editcourse, value]);
+    if(!editcourse.includes(value)){
+      seteditcourse(prevCourses =>[...prevCourses, value]);
+    }
+    
   }else{
-    seteditcourse(editcourse.filter(item => item !== value));
+    seteditcourse(prevCourses => prevCourses.filter(course => course !== value));
   }
+  console.log(editcourse);
  }
 
+ const handlecreatecontact = (e) =>{
+  const value = e.target.value;
+ if(value.length <= 10 && /^\d*$/.test(value)) {
+  setcontact(value);
+}
+}
+
+ const handleeditphone =(e)=>{
+ const value = e.target.value;
+ if(value.length <= 10 && /^\d*$/.test(value)) {
+  seteditcontact(value);
+}
+ }
+
+ const handlesearch =async(e)=>{
+  e.preventDefault();
+  if (query.trim().length === 0) {
+    alert("Please enter at least one character to search");
+    return;
+  }
+  try {
+    const response = await axios.get('http://localhost:3000/search', {
+      params: { query }
+    });
+    setsearchresults(response.data);
+    console.log('API Response:', response.data);
+    setsearchstatus(true);
+    } catch (err) {
+    console.log(err);
+    } 
+ };
 
 // const increaseid = async () => {
 //   const newid = id + 1;
@@ -267,14 +310,11 @@ const edithandlecheckbox = (e) => {
         <div className='gridcontainer'>
           <div className='searchdiv griditem1'>
             <ul>
-              <li><button className='searchIcon'><FaSearch className='fasearch_icon'/></button></li>
-              <li><input className='searchInput'  type="text" placeholder='Enter search Keyword'/></li>
               <li>
-                <select name="searchfilters" id="filters" className='searchoptions'>
-                  <option value="Name">Name</option>
-                  <option value="Email">Email</option>
-                  <option value="Contact">Contact</option>
-                </select>
+                <button onClick={handlesearch} className='searchIcon'><FaSearch className='fasearch_icon'/></button>
+              </li>
+              <li>
+                <input className='searchInput' value={query} type="text" placeholder='Enter search Keyword' onChange={(e)=>setquery(e.target.value)}/>
               </li>
             </ul>
           </div>
@@ -291,8 +331,45 @@ const edithandlecheckbox = (e) => {
 
           {/* **************************************************************mapfunction */}
           {
+            searchstatus ? searchresults.map((result) => (
+            <React.Fragment key={result._id}>
+              <div className='griditem griddiv gridid'>
+                <p className='gridid'>1</p>
+              </div>
+              <div className='griditem griddiv gridimage'>
+                <img className="imageprofile" src={result.Image} alt="img" />
+              </div>
+              <div className='griditem griddiv'>
+                <p className='gridname'>{result.UserName}</p>
+              </div>
+              <div className='griditem griddiv'>
+                <a href={`mailto:${result.Email}`}>{result.Email}</a>
+              </div>
+              <div className='griditem griddiv'>
+                <p className='gridcontact'>{result.MobileNo}</p>
+              </div>
+              <div className='griditem griddiv'>
+                <p className='griddesignation'>{result.Designation}</p>  
+              </div>
+              <div className='griditem griddiv'>
+                <p className='gridgender'>{result.Gender}</p>
+              </div>
+              <div className='griditem griddiv'>
+                <p className='gridcourse'>{result.Course}</p>
+              </div>
+              <div className='griditem griddiv'>
+                <p className='griddate'>{result.empDate}</p>
+              </div>
+              <div className='griditem griddiv'>
+                <span className='gridaction actionEdit' onClick={()=>handleEditClick(result)}>Edit </span>
+                <span>-</span>
+                <span className='gridaction actionDelete' onClick={()=>handleDeleteClick(result)}>Delete </span>
+              </div>
+            </React.Fragment>
+            )) : 
+            
             emps.map((emp)=>(
-            <>
+            <React.Fragment key={emp._id}>
               <div className='griditem griddiv gridid'>
                 <p className='gridid'>1</p>
               </div>
@@ -325,10 +402,10 @@ const edithandlecheckbox = (e) => {
                 <span>-</span>
                 <span className='gridaction actionDelete' onClick={()=>handleDeleteClick(emp)}>Delete </span>
               </div>
-            </>
+            </React.Fragment>
             ))
           }
-
+          
         </div>
 
 
@@ -351,7 +428,7 @@ const edithandlecheckbox = (e) => {
                       <tr className='createtablerow'>
                           <td className='leftlabel'>Mobile No </td>
                           <td>:</td>
-                          <td><input type="number" className="createinputs" placeholder='Enter your number' value={contact} onChange={(e)=>setcontact(e.target.value)}/></td>
+                          <td><input type="number" className="createinputs" placeholder='Enter your number' value={contact} onChange={handlecreatecontact}/></td>
                       </tr>
                       <tr className='createtablerow'>
                           <td className='leftlabel'>Designation </td>
@@ -437,7 +514,7 @@ const edithandlecheckbox = (e) => {
                           <td className='leftlabel'>Mobile No </td>
                           <td>:</td>
                           <td>
-                          <input type="number" className="createinputs" placeholder='Enter your number' value={editcontact} onChange={(e)=>seteditcontact(e.target.value)} />
+                          <input type="number" className="createinputs" placeholder='Enter your number' value={editcontact} onChange={handleeditphone} />
                           </td>
                       </tr>
                       <tr className='createtablerow'>
@@ -469,13 +546,13 @@ const edithandlecheckbox = (e) => {
                           <td>:</td>
                           <td className='coursecheckbox'>
                               <div className='optionitems'>
-                                <input type="checkbox" name='course' value={"MCA"} checked={editcourse === "MCA" ? true : false} onChange={edithandlecheckbox}/> <span> MCA</span>
+                                <input type="checkbox" name='course' value={"MCA"} checked={editcourse.includes("MCA")} onChange={edithandlecheckbox}/> <span> MCA</span>
                               </div>
                               <div className='optionitems'>
-                                <input type="checkbox" name='course' value={"BCA"} checked={editcourse === "BCA" ? true : false} onChange={edithandlecheckbox}/> <span> BCA</span>
+                                <input type="checkbox" name='course' value={"BCA"} checked={editcourse.includes("BCA")} onChange={edithandlecheckbox}/> <span> BCA</span>
                               </div>
                               <div className='optionitems'>
-                                  <input type="checkbox" name='course' value={"BSC"} checked={editcourse === "BSC" ? true : false} onChange={edithandlecheckbox}/> <span> BSC</span>
+                                  <input type="checkbox" name='course' value={"BSC"} checked={editcourse.includes("BSC")} onChange={edithandlecheckbox}/> <span> BSC</span>
                               </div>
                           </td>
                       </tr>

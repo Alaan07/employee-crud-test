@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const employeSchema = new mongoose.Schema({
+const employeeSchema = new mongoose.Schema({
     // id : {type : Number, required: true},
     UserName : {type: String, required: true},
     Email : {type: String, required: true},
@@ -12,6 +12,8 @@ const employeSchema = new mongoose.Schema({
     Image : {type: String, required: true},
 });
 
-const employeeModel = mongoose.model("employeelists", employeSchema);
+employeeSchema.index({ UserName: 'text', Email: 'text', Designation: 'text'});
+
+const employeeModel = mongoose.model("employeelists", employeeSchema);
 
 export default employeeModel;

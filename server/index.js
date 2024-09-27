@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import fs from 'fs';
 import multer from 'multer';
 import employeeModel from './dbModels/employeemodels.js';
 
@@ -72,6 +73,18 @@ app.post('/update/:id', upload.single('profile'), async(req, res)=>{
   try {
       const imagepath = req.file ? req.file.path : null;
 
+      const deleteimg =await employeeModel.findById({_id:id});
+      const delimg = deleteimg.Image;
+
+      if(imagepath){
+        fs.unlink(delimg, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }
+      
+
       const checkemp = await employeeModel.findOne({Email:req.body.Email});
       if (checkemp && checkemp._id.toString() !== id) {
         return res.json({ alreadyexist: true });
@@ -84,7 +97,7 @@ app.post('/update/:id', upload.single('profile'), async(req, res)=>{
           Gender : req.body.Gender,
           empDate: currentdate,
           Course : req.body.Course,
-          Image : imagepath ? `../server/${imagepath}` : undefined,
+          Image : imagepath ? `../server/${imagepath}` : delimg,
       },
       { new: true }
     )
@@ -99,6 +112,17 @@ app.delete('/deleteemp/:id', async(req, res)=>{
   const {id} = req.params;
   console.log(id)
   try{
+    const deleteimg =await employeeModel.findById({_id:id});
+    const delimg = deleteimg.Image;
+    console.log(delimg);
+
+    fs.unlink(delimg, (err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log('Image deleted successfully');
+    });
+
     const deleteuser = await employeeModel.findByIdAndDelete({_id:id});
     res.json(deleteuser);
   }catch(err){
@@ -117,6 +141,33 @@ app.get('/editemp/:id', async(req, res)=>{
     console.log(err);
   }
 })
+
+app.get('/search', async (req, res) => {
+  const searchQuery = req.query.query || '';
+
+  try {
+    const results = await employeeModel.aggregate([
+      {
+        $match: {
+          $or: [
+            { UserName: { $regex: searchQuery, $options: 'i' }},
+            { Designation: { $regex: searchQuery, $options: 'i' }},
+            { Email: { $regex: searchQuery, $options: 'i' }}
+          ]
+        }
+      },
+      {
+        $project: {
+          UserName: 1, Email: 1, Designation: 1, MobileNo: 1, Gender: 1, Course: 1, empDate: 1, Image: 1
+        }
+      }
+    ]);
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error during search:', error);
+  }
+});
 
 // app.get('/id', async (req, res) => {
 //     try {
