@@ -156,10 +156,12 @@ const handleCreateSubmit = async(e) => {
   formData.append('Course', Course);
     if((username === '')||(email === '')|| (contact === '')|| (desig === '')|| (empgender === '')|| (empcourse === '')){
       alert("All fields must be field")
+    }else if((contact.length > 10) || (contact.length < 10)){
+      alert("Mobile No must be 10 Digits")
     }
     else{
         try {
-          const response = await axios.post('http://localhost:3000/upload', formData, {
+          const response = await axios.post(`http://localhost:3000/upload/${count}`, formData, {
               headers: {
                   'Content-Type': 'multipart/form-data',
               },
@@ -220,18 +222,18 @@ const handlechecbox = (e) => {
 }
 
 const edithandlecheckbox = (e) => {
-  const value = e.target.value;
- 
-  if(e.target.checked){
-    if(!editcourse.includes(value)){
-      seteditcourse(prevCourses =>[...prevCourses, value]);
+  const value = e.target.value.trim();
+
+  let currentCourses = Array.isArray(editcourse) ? editcourse : [];
+  if (e.target.checked) {
+    if (!currentCourses.includes(value)) {
+      seteditcourse([...currentCourses, value]);
     }
-    
-  }else{
-    seteditcourse(prevCourses => prevCourses.filter(course => course !== value));
+  } else {
+    seteditcourse(currentCourses.filter(course => course !== value));
   }
-  console.log(editcourse);
- }
+  console.log(currentCourses);
+};
 
  const handlecreatecontact = (e) =>{
   const value = e.target.value;
@@ -275,6 +277,8 @@ const edithandlecheckbox = (e) => {
       sortedemp = [...emps].sort((a, b) => a.UserName.localeCompare(b.UserName));
     }else if(headfield === 'email'){
       sortedemp = [...emps].sort((a, b) => a.Email.localeCompare(b.Email));
+    }else if(headfield === 'id'){
+        sortedemp = [...emps].sort((a, b) => a.ID - b.ID);
     }else{
       sortedemp = [...emps].sort((a, b) => new Date(a.empDate) - new Date(b.empDate));
     }
@@ -284,8 +288,10 @@ const edithandlecheckbox = (e) => {
       sortedemp = [...emps].sort((a, b) => b.UserName.localeCompare(a.UserName));
     }else if(headfield === 'email'){
       sortedemp = [...emps].sort((a, b) => b.Email.localeCompare(a.Email));
+    }else if(headfield === 'id'){
+      sortedemp = [...emps].sort((a, b) => b.ID - a.ID);
     }else{
-      sortedemp = [...emps].sort((a, b) => new Date(b.empDate) - new Date(admin.empDate));
+      sortedemp = [...emps].sort((a, b) => new Date(b.empDate) - new Date(a.empDate));
     }
     setsortType('desc');
   }else {
@@ -297,12 +303,26 @@ setemps(sortedemp);
   }else{
     let searchsortedemp;
   if(sortType === 'default'){
-    searchsortedemp = [...searchresults].sort((a, b) => a.UserName.localeCompare(b.UserName));
+    if(headfield === 'name'){
+      searchsortedemp = [...searchresults].sort((a, b) => a.UserName.localeCompare(b.UserName));
+    }else if(headfield === 'email'){
+      searchsortedemp = [...searchresults].sort((a, b) => a.Email.localeCompare(b.Email));
+    }else if(headfield === 'id'){
+      searchsortedemp = [...searchresults].sort((a, b) => a.ID - b.ID);
+    }else{
+      searchsortedemp = [...searchresults].sort((a, b) => new Date(a.empDate) - new Date(b.empDate));
+    }
     setsortType('asc');
   }else if (sortType === 'asc') {
-    searchsortedemp = [...searchresults].sort((a, b) =>
-      b.UserName.localeCompare(a.UserName)
-    );
+    if(headfield === 'name'){
+      searchsortedemp = [...searchresults].sort((a, b) => b.UserName.localeCompare(a.UserName));
+    }else if(headfield === 'email'){
+      searchsortedemp = [...searchresults].sort((a, b) => b.Email.localeCompare(a.Email));
+    }else if(headfield === 'id'){
+      searchsortedemp = [...searchresults].sort((a, b) => b.ID - a.ID);
+    }else{
+      searchsortedemp = [...searchresults].sort((a, b) => new Date(b.empDate) - new Date(a.empDate));
+    }
     setsortType('desc');
   }else {
     searchsortedemp = [...copyorigsearch];
@@ -372,11 +392,11 @@ setsearchresults(searchsortedemp);
                 <button onClick={handlesearch} className='searchIcon'><FaSearch className='fasearch_icon'/></button>
               </li>
               <li>
-                <input className='searchInput' value={query} type="text" placeholder='Enter search Keyword' onChange={(e)=>setquery(e.target.value)}/>
+                <input className='searchInput' value={query} type="text" placeholder='search by name, email, desig' onChange={(e)=>setquery(e.target.value)}/>
               </li>
             </ul>
           </div>
-          <div className='griditem2 griditem gridid gridhead headsort'>Id</div>
+          <div className='griditem2 griditem gridid gridhead headsort' onClick={()=>handleSortToggle('id')}>ID {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
           <div className='griditem3 griditem gridhead'>Image</div>
           <div className='griditem4 griditem gridhead headsort' onClick={()=>handleSortToggle('name')}>Name {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
           <div className='griditem5 griditem gridhead headsort' onClick={()=>handleSortToggle('email')}>Email {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
@@ -392,7 +412,7 @@ setsearchresults(searchsortedemp);
             searchstatus ? searchresults.map((result, index) => (
             <React.Fragment key={index}>
               <div className='griditem griddiv gridid'>
-                <p className='gridid'>1</p>
+                <p className='gridid'>{result.ID}</p>
               </div>
               <div className='griditem griddiv gridimage'>
                 <img className="imageprofile" src={result.Image} alt="img" />
@@ -429,7 +449,7 @@ setsearchresults(searchsortedemp);
             emps.map((emp, index)=>(
             <React.Fragment key={index}>
               <div className='griditem griddiv gridid'>
-                <p className='gridid'>1</p>
+                <p className='gridid'>{emp.ID}</p>
               </div>
               <div className='griditem griddiv gridimage'>
                 <img className="imageprofile" src={emp.Image} alt="img" />
@@ -486,7 +506,7 @@ setsearchresults(searchsortedemp);
                       <tr className='createtablerow'>
                           <td className='leftlabel'>Mobile No </td>
                           <td>:</td>
-                          <td><input type="number" className="createinputs" placeholder='Enter your number' value={contact} onChange={handlecreatecontact}/></td>
+                          <td><input type="number" className="createinputs contactinput" placeholder='Enter your number' value={contact} onChange={handlecreatecontact}/></td>
                       </tr>
                       <tr className='createtablerow'>
                           <td className='leftlabel'>Designation </td>
@@ -572,7 +592,7 @@ setsearchresults(searchsortedemp);
                           <td className='leftlabel'>Mobile No </td>
                           <td>:</td>
                           <td>
-                          <input type="number" className="createinputs" placeholder='Enter your number' value={editcontact} onChange={handleeditphone} />
+                          <input type="number" className="createinputs contactinput" placeholder='Enter your number' value={editcontact} onChange={handleeditphone} />
                           </td>
                       </tr>
                       <tr className='createtablerow'>
@@ -600,19 +620,22 @@ setsearchresults(searchsortedemp);
                           </td>
                       </tr>
                       <tr className='createtablerow'>
-                          <td className='leftlabel'>Course </td>
-                          <td>:</td>
-                          <td className='coursecheckbox'>
-                              <div className='optionitems'>
-                                <input type="checkbox" name='course' value={"MCA"} checked={editcourse.includes("MCA")} onChange={edithandlecheckbox}/> <span> MCA</span>
-                              </div>
-                              <div className='optionitems'>
-                                <input type="checkbox" name='course' value={"BCA"} checked={editcourse.includes("BCA")} onChange={edithandlecheckbox}/> <span> BCA</span>
-                              </div>
-                              <div className='optionitems'>
-                                  <input type="checkbox" name='course' value={"BSC"} checked={editcourse.includes("BSC")} onChange={edithandlecheckbox}/> <span> BSC</span>
-                              </div>
-                          </td>
+                        <td className='leftlabel'>Course </td>
+                        <td>:</td>
+                        <td className='coursecheckbox'>
+                          <div className='optionitems'>
+                            <input type="checkbox" name='course' value={"MCA"} checked={editcourse.includes("MCA")} onChange={edithandlecheckbox}/> 
+                            <span> MCA</span>
+                          </div>
+                          <div className='optionitems'>
+                            <input type="checkbox" name='course' value={"BCA"} checked={editcourse.includes("BCA")} onChange={edithandlecheckbox}/> 
+                            <span> BCA</span>
+                          </div>
+                          <div className='optionitems'>
+                            <input type="checkbox" name='course' value={"BSC"} checked={editcourse.includes("BSC")} onChange={edithandlecheckbox}/> 
+                            <span> BSC</span>
+                          </div>
+                        </td>
                       </tr>
                       <tr className='createtablerow'>
                           <td className='leftlabel'>Img Upload </td>

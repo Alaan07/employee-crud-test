@@ -338,3 +338,7 @@ border-bottom: 2px solid rgb(218, 213, 213);
 .headsort{
     cursor: pointer;
 }
+.contactinput::-webkit-inner-spin-button, .contactinput::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}

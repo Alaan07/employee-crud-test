@@ -32,6 +32,34 @@ const currentdate = `${day}-${monthNames[month - 1]}-${year}`;
 mongoose.connect("mongodb://localhost:27017/dealsdray");
 
 
+let lastEmployeeDocument = null;
+
+async function findlastdocID() {
+  try {
+    const lastdoc = await employeeModel.find({}, { ID: 1, _id: 0 })
+      .sort({ ID: -1 })
+      .limit(1);
+
+    if (lastdoc.length > 0) {
+      console.log('Last document with ID:', lastdoc[0]);
+
+      lastEmployeeDocument = lastdoc[0];
+      console.log('Stored last employee document ID:', lastEmployeeDocument.ID);
+
+      return lastEmployeeDocument;
+    } else {
+      console.log('No document found');
+      lastEmployeeDocument = null;
+      return null;
+    }
+  } catch (err) {
+    console.log('Error finding last document:', err);
+  }
+}
+
+
+
+
 app.get("/getemp", async(req, res) => {
   try{
       const userdata = await employeeModel.find({});
@@ -42,15 +70,25 @@ app.get("/getemp", async(req, res) => {
   }
 })
 
-app.post('/upload', upload.single('profile'), async(req, res)=>{
+app.post('/upload/:count', upload.single('profile'), async(req, res)=>{
     try {
+      const count = Number(req.params.count);
+      await findlastdocID();
         const imagepath = req.file.path;
+        console.log("count =", count);
+
+        if(count === 0){
+          var id = 0;
+        }else{
+          var id = lastEmployeeDocument.ID + 1;
+        }
 
         const isexist = await employeeModel.findOne({Email:req.body.Email});
         if(isexist){
             return res.json({alreadyexist:true});
         }else{
           const emp = await employeeModel.create({
+            ID : id,
             UserName : req.body.UserName,
             Email : req.body.Email,
             MobileNo : req.body.MobileNo,
@@ -158,7 +196,7 @@ app.get('/search', async (req, res) => {
       },
       {
         $project: {
-          UserName: 1, Email: 1, Designation: 1, MobileNo: 1, Gender: 1, Course: 1, empDate: 1, Image: 1
+          ID: 1, UserName: 1, Email: 1, Designation: 1, MobileNo: 1, Gender: 1, Course: 1, empDate: 1, Image: 1
         }
       }
     ]);
