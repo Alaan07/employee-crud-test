@@ -17,7 +17,6 @@ const [searchstatus, setsearchstatus] = useState(false);
 const navigate = useNavigate();
 const [admin, setadmin] = useState("");
 const [count, setCount] = useState(1);
-// const [id, setid] = useState(0);
 const [username, setusername] = useState("");
 const [email, setemail] = useState("");
 const [contact, setcontact] = useState("");
@@ -85,15 +84,6 @@ setcopyorig(emps);
 if (copyorigsearch.length === 0) {
   setcopyorigsearch(searchresults);
 }
-//  const fetchid = async () => {
-//   try {
-//     const response = await axios.get('http://localhost:3000/id');
-//     setid(response.data.id);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-// fetchid();
 }, [count, editid, searchresults, copyorigsearch]);
 
 const handleHomeclick = () =>{
@@ -119,7 +109,6 @@ const handleDeleteClick = async({_id}) =>{
 }
 }
 
-
 const handleEditClick = async({_id}) => {
   document.querySelector('.updateemployeediv').style.display = "flex"
   document.querySelector('.gridcontainer').style.display = "none"
@@ -140,9 +129,6 @@ const handleEditClick = async({_id}) => {
     console.log(err);
   }
 }
-
-
-
 
 const handleCreateSubmit = async(e) => {
   e.preventDefault();
@@ -334,17 +320,6 @@ setsearchresults(searchsortedemp);
   
  }
 
-// const increaseid = async () => {
-//   const newid = id + 1;
-//   setid(newid);
-//   try {
-//     await axios.post('http://localhost:3000/id', { id: newid });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-
   return (
     <div className='dashboardPageContainer'>
     {/* //*********************************************** navtop part */}
@@ -392,7 +367,7 @@ setsearchresults(searchsortedemp);
                 <button onClick={handlesearch} className='searchIcon'><FaSearch className='fasearch_icon'/></button>
               </li>
               <li>
-                <input className='searchInput' value={query} type="text" placeholder='search by name, email, desig' onChange={(e)=>setquery(e.target.value)}/>
+                <input className='searchInput' value={query} type="text" placeholder='search by name, email, desig or id' onChange={(e)=>setquery(e.target.value)}/>
               </li>
             </ul>
           </div>

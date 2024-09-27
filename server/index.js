@@ -182,7 +182,7 @@ app.get('/editemp/:id', async(req, res)=>{
 
 app.get('/search', async (req, res) => {
   const searchQuery = req.query.query || '';
-
+  const numericID = Number(searchQuery);
   try {
     const results = await employeeModel.aggregate([
       {
@@ -190,7 +190,8 @@ app.get('/search', async (req, res) => {
           $or: [
             { UserName: { $regex: searchQuery, $options: 'i' }},
             { Designation: { $regex: searchQuery, $options: 'i' }},
-            { Email: { $regex: searchQuery, $options: 'i' }}
+            { Email: { $regex: searchQuery, $options: 'i' }},
+            { ID: numericID}
           ]
         }
       },
@@ -206,34 +207,6 @@ app.get('/search', async (req, res) => {
     console.error('Error during search:', error);
   }
 });
-
-// app.get('/id', async (req, res) => {
-//     try {
-//       let idcounter = await employeeModel.findOne();
-//       if (!idcounter) {
-//         idcounter = new employeeModel({ id: 0 });
-//         await idcounter.save();
-//       }
-//       res.json(idcounter);
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   });
-
-//   app.post('/id', async (req, res) => {
-//     try {
-//       let idcounter = await employeeModel.findOne();
-//       if (!idcounter) {
-//         ifcounter = new employeeModel({ id: req.body.id });
-//       } else {
-//         idcounter.id = req.body.id;
-//       }
-//       await idcounter.save();
-//       res.json(idcounter);
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   });
 
 app.listen(port, () => {
     console.log(`the Server is started at port http://localhost:${port}`);
