@@ -4,8 +4,13 @@ import { FaSearch } from 'react-icons/fa'
 import axios from 'axios';
 
 function Dashbord() {
-const [emps, setemps] = useState([{}]);
+const [emps, setemps] = useState([]);
+const [copyorig, setcopyorig] = useState([]);
 const [searchresults, setsearchresults] = useState([]);
+const [copyorigsearch, setcopyorigsearch] = useState([]);
+const [sortType, setsortType] = useState('default')
+
+
 const [query, setquery] = useState("");
 const [searchstatus, setsearchstatus] = useState(false);
 
@@ -76,6 +81,10 @@ if (searchresults.length > 0) {
   console.log('Updated search results state:', searchresults);
 }
 
+setcopyorig(emps);
+if (copyorigsearch.length === 0) {
+  setcopyorigsearch(searchresults);
+}
 //  const fetchid = async () => {
 //   try {
 //     const response = await axios.get('http://localhost:3000/id');
@@ -85,7 +94,7 @@ if (searchresults.length > 0) {
 //   }
 // };
 // fetchid();
-}, [count, editid, searchresults]);
+}, [count, editid, searchresults, copyorigsearch]);
 
 const handleHomeclick = () =>{
   window.location.reload();
@@ -256,6 +265,55 @@ const edithandlecheckbox = (e) => {
     } 
  };
 
+ const handleSortToggle = (field) => {
+  let headfield = field;
+
+  if(!searchstatus){
+    let sortedemp;
+  if(sortType === 'default'){
+    if(headfield === 'name'){
+      sortedemp = [...emps].sort((a, b) => a.UserName.localeCompare(b.UserName));
+    }else if(headfield === 'email'){
+      sortedemp = [...emps].sort((a, b) => a.Email.localeCompare(b.Email));
+    }else{
+      sortedemp = [...emps].sort((a, b) => new Date(a.empDate) - new Date(b.empDate));
+    }
+    setsortType('asc');
+  }else if (sortType === 'asc') {
+    if(headfield === 'name'){
+      sortedemp = [...emps].sort((a, b) => b.UserName.localeCompare(a.UserName));
+    }else if(headfield === 'email'){
+      sortedemp = [...emps].sort((a, b) => b.Email.localeCompare(a.Email));
+    }else{
+      sortedemp = [...emps].sort((a, b) => new Date(b.empDate) - new Date(admin.empDate));
+    }
+    setsortType('desc');
+  }else {
+    sortedemp = [...copyorig];
+  setsortType('default');
+  }
+
+setemps(sortedemp);
+  }else{
+    let searchsortedemp;
+  if(sortType === 'default'){
+    searchsortedemp = [...searchresults].sort((a, b) => a.UserName.localeCompare(b.UserName));
+    setsortType('asc');
+  }else if (sortType === 'asc') {
+    searchsortedemp = [...searchresults].sort((a, b) =>
+      b.UserName.localeCompare(a.UserName)
+    );
+    setsortType('desc');
+  }else {
+    searchsortedemp = [...copyorigsearch];
+  setsortType('default');
+  }
+
+setsearchresults(searchsortedemp);
+  }
+  
+ }
+
 // const increaseid = async () => {
 //   const newid = id + 1;
 //   setid(newid);
@@ -318,21 +376,21 @@ const edithandlecheckbox = (e) => {
               </li>
             </ul>
           </div>
-          <div className='griditem2 griditem gridid gridhead'>Id</div>
+          <div className='griditem2 griditem gridid gridhead headsort'>Id</div>
           <div className='griditem3 griditem gridhead'>Image</div>
-          <div className='griditem4 griditem gridhead'>Name</div>
-          <div className='griditem5 griditem gridhead'>Email</div>
+          <div className='griditem4 griditem gridhead headsort' onClick={()=>handleSortToggle('name')}>Name {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
+          <div className='griditem5 griditem gridhead headsort' onClick={()=>handleSortToggle('email')}>Email {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
           <div className='griditem6 griditem gridhead'>Mobile No</div>
           <div className='griditem7 griditem gridhead'>Designtion</div>
           <div className='griditem8 griditem gridhead'>Gender</div>
           <div className='griditem9 griditem gridhead'>Course</div>
-          <div className='griditem10 griditem gridhead'>Create Date</div>
+          <div className='griditem10 griditem gridhead headsort'onClick={()=>handleSortToggle('date')}>Date {sortType === 'default'? 'd': sortType === 'asc'? 'A':'D'}</div>
           <div className='griditem11 griditem gridhead'>Action</div>
 
           {/* **************************************************************mapfunction */}
           {
-            searchstatus ? searchresults.map((result) => (
-            <React.Fragment key={result._id}>
+            searchstatus ? searchresults.map((result, index) => (
+            <React.Fragment key={index}>
               <div className='griditem griddiv gridid'>
                 <p className='gridid'>1</p>
               </div>
@@ -368,8 +426,8 @@ const edithandlecheckbox = (e) => {
             </React.Fragment>
             )) : 
             
-            emps.map((emp)=>(
-            <React.Fragment key={emp._id}>
+            emps.map((emp, index)=>(
+            <React.Fragment key={index}>
               <div className='griditem griddiv gridid'>
                 <p className='gridid'>1</p>
               </div>

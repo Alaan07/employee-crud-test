@@ -335,3 +335,6 @@ border-bottom: 2px solid rgb(218, 213, 213);
     border-right: 0;
     cursor: pointer;
 }
+.headsort{
+    cursor: pointer;
+}
