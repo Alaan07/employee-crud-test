@@ -12,7 +12,7 @@ const employeeSchema = new mongoose.Schema({
     Image : {type: String, required: true},
 });
 
-employeeSchema.index({ UserName: 'text', Email: 'text', Designation: 'text'});
+// employeeSchema.index({ UserName: 'text', Email: 'text', Designation: 'text'});
 
 const employeeModel = mongoose.model("employeelists", employeeSchema);
 

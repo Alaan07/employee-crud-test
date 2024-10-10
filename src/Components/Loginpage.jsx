@@ -1,30 +1,49 @@
 import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 
 
 function Loginpage() {
     const navigate = useNavigate();
     const [username, setusername] = useState("");
     const [password, setpassword] = useState("");
-    const name = "Hukum Gupta";
-    const userpassword = "admin123"
 
-    const handleLoginClick = (e) =>{
+
+
+    const handleLoginClick = async(e) =>{
       e.preventDefault();
+      console.log(username, password);
+      
       if((username === '') || (password === '')){
         alert("All fields must be filed");
-      }else if(username !== name){
-       alert("User Name is incorrect!!")
-      } else if(password !== userpassword){
-        alert("Password is incorrect!!")
-      }else{
-        localStorage.setItem('username', JSON.stringify(username));
-        alert("Login Successfull!!")
-        navigate('/dashboard');
-      } 
+      return;
+      }
+
+      try {
+        const response = await axios.post('http://localhost:3000/api/login', { username, password });
+        const validData = response.data.invalid;
+        const isauth = response.data.userauth
+        console.log(validData);
+        console.log(isauth);
+
+
+        if(validData){
+          alert("Invalid Credentials")
+        }else{
+          localStorage.setItem('username', JSON.stringify(username));
+          alert("Login successfull")
+          navigate('/dashboard', {state:{userauth: isauth}});
+        }
+
+    } catch (err){
+      console.log(err);
+    }
       setusername("");
       setpassword("");
     }
+      
+    
+  
 
   return (
     <div className='loginPageContainer'>
@@ -52,7 +71,6 @@ function Loginpage() {
         </table>
       </div>
     </div>
-  )
-}
+  )}
 
 export default Loginpage

@@ -29,10 +29,12 @@ const year = date.getFullYear();
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const currentdate = `${day}-${monthNames[month - 1]}-${year}`;
 
+
 mongoose.connect("mongodb://localhost:27017/dealsdray");
 
 
 let lastEmployeeDocument = null;
+var userauth = false; 
 
 async function findlastdocID() {
   try {
@@ -57,13 +59,39 @@ async function findlastdocID() {
   }
 }
 
+// ****************
+
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  const Name = 'Hukum Gupta';
+  const userPassword = 'admin123'
+
+  if ((username !== Name) || (password !== userPassword)) {
+    return res.json({invalid : true, userauth:false});
+  }else{
+    res.json({invalid : false, userauth:true});
+    return userauth=true;
+  }
+});
+
+app.get('/logout', (req, res) => {
+   res.json({delauth: false});
+   return userauth = false;
+});
 
 
+// *****************
 
-app.get("/getemp", async(req, res) => {
+app.get('/checkAuth', (req, res) => {
+  res.json(userauth);
+})
+
+app.get("/getemp",  async(req, res) => {
+  console.log(userauth);
   try{
       const userdata = await employeeModel.find({});
-      res.json(userdata)
+      res.json({ userauth: userauth, data: userdata })
   }
   catch(err) {
       console.log(err);

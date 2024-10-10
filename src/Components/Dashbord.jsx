@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation} from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa'
 import axios from 'axios';
 
 function Dashbord() {
+const [islogout, setislogout] = useState(true); 
 const [emps, setemps] = useState([]);
 const [copyorig, setcopyorig] = useState([]);
 const [searchresults, setsearchresults] = useState([]);
@@ -14,6 +15,7 @@ const [sortType, setsortType] = useState('default')
 const [query, setquery] = useState("");
 const [searchstatus, setsearchstatus] = useState(false);
 
+const location = useLocation();
 const navigate = useNavigate();
 const [admin, setadmin] = useState("");
 const [count, setCount] = useState(1);
@@ -43,18 +45,42 @@ var Designation = desig;
 var Gender = empgender;
 var Course = empcourse;
 
-
+// 
 useEffect(()=> {
-  const fetchData = (async() => {
-      try{
-        const res = await axios.get('http://localhost:3000/getemp');
-        setemps(res.data)
-        setCount(res.data.length);
-       }catch(err){
+  
+  const checkauth = async() => {
+    try{
+      const auth = await axios.get('http://localhost:3000/checkAuth');
+      console.log('authdata',auth.data);
+
+      if(auth.data){
+        setislogout(false);
+
+        const fetchData = (async() => {
+              try{
+                const res = await axios.get('http://localhost:3000/getemp');
+                  setemps(res.data.data);
+                  setCount(res.data.data.length);
+               }catch(err){
                 console.log(err)
-         }
-       })
-      fetchData();
+                 }
+               })
+              fetchData();
+        
+      }else{
+        alert('not authorised')
+        navigate('/');
+      }
+
+    }
+    catch(err){
+      alert('not authorised')
+      navigate('/');
+      console.log(err)
+    }
+  }
+  checkauth();
+  
 
  const check = () => {
   const username = JSON.parse(localStorage.getItem('username'));
@@ -72,6 +98,8 @@ useEffect(()=> {
   }
  }
  check();
+
+
  if (editid) {
   console.log('Current editid:', editid);
 }
@@ -84,14 +112,31 @@ setcopyorig(emps);
 if (copyorigsearch.length === 0) {
   setcopyorigsearch(searchresults);
 }
-}, [count, editid, searchresults, copyorigsearch]);
+}, [islogout, count, editid, searchresults, copyorigsearch]);
+
+
+
+const handellogoutbtn = async() =>{
+  try{
+    const logoutres = await axios.get('http://localhost:3000/logout')
+    const delauth = logoutres.data.delauth;
+    console.log('delauth res', delauth);
+    if(!delauth){
+      setislogout(true);
+      navigate('/')
+    }
+  }catch(err){
+    console.log(err);
+  }
+}
+
+
+
 
 const handleHomeclick = () =>{
   window.location.reload();
 }
-const handleLogoutClick = () =>{
-  navigate('/')
-}
+
 const handleCreatClick = () => {
   document.querySelector('.welcomediv').style.display = "none"
   document.querySelector('.createemployeediv').style.display = "flex"
@@ -203,7 +248,7 @@ const handlechecbox = (e) => {
  if(e.target.checked){
    setempcourse([...empcourse, value]);
  }else{
-  setempcourse(empcourse.filter(item => item !== value));
+   setempcourse(empcourse.filter(item => item !== value));
  }
 }
 
@@ -342,7 +387,7 @@ setsearchresults(searchsortedemp);
             <div>
               <ul className='logoutsection'>
                 <li>{admin} - </li>
-                <li className='navitem logoutbtn' onClick={handleLogoutClick}>Logout</li>
+                <li className='navitem logoutbtn' onClick={handellogoutbtn}>Logout</li>
               </ul>
             </div>
           </nav>
@@ -464,7 +509,7 @@ setsearchresults(searchsortedemp);
 
 {/* //*********************************************** create part */}
           <div className='createemployeediv'>
-            <form onSubmit={handleCreateSubmit} encType="multipart/form-data">
+            <form onSubmit={handleCreateSubmit} enctype="multipart/form-data">
                 <table className='createTable'>
                 <thead className='tablehead'><tr><td colSpan={3}>Create Employee</td></tr></thead>
                   <tbody className='createtablebody'>
