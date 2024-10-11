@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { useNavigate, useLocation} from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa'
 import axios from 'axios';
@@ -45,6 +45,8 @@ var Designation = desig;
 var Gender = empgender;
 var Course = empcourse;
 
+const alertShownRef = useRef(false);
+
 // 
 useEffect(()=> {
   
@@ -68,14 +70,17 @@ useEffect(()=> {
               fetchData();
         
       }else{
-        alert('not authorised')
-        navigate('/');
+        if (!alertShownRef.current) {
+          alert('not authorised');
+          alertShownRef.current = true;
+          navigate('/');
+         }
       }
 
     }
     catch(err){
-      alert('not authorised')
-      navigate('/');
+      // alert('bottom not authorised')
+      // navigate('/');
       console.log(err)
     }
   }
